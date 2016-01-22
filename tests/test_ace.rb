@@ -46,19 +46,26 @@ class TestAce < CiscoTestCase
     attr_v4_1 = {
       action:   'permit',
       proto:    'tcp',
-      src_addr: '7.8.9.6 2.3.4.5',
-      src_port: 'eq 40',
-      dst_addr: '1.2.3.4/32',
-      dst_port: 'neq 20',
+      src_addr: '7.8.9.6',
+      src_addr_mask: '2.3.4.5',
+      src_port_op: 'eq',
+      src_port_1: '40',
+      dst_addr: '1.2.3.4',
+      dst_addr_prefix: '32',
+      dst_port_op: 'neq',
+      dst_port_1: '20',
     }
 
     attr_v4_2 = {
       action:   'deny',
       proto:    'udp',
-      src_addr: '7.8.9.6/32',
-      src_port: 'eq 41',
+      src_addr: '7.8.9.6',
+      src_addr_prefix: '32',
+      src_port_op: 'eq',
+      src_port_1: '40',
       dst_addr: 'host 1.2.3.4',
-      dst_port: 'neq 20',
+      dst_port_op: 'neq',
+      dst_port_1: '20',
     }
 
     attr_v4_3 = {
@@ -68,19 +75,19 @@ class TestAce < CiscoTestCase
     attr_v6_1 = {
       action:   'permit',
       proto:    '6',
-      src_addr: 'addrgroup fi',
-      src_port: '',
-      dst_addr: '1::7/32',
-      dst_port: '',
+      src_addr_group: 'addrgroup fi',
+      dst_addr: '1::7',
+      dst_addr_prefix: '32',
     }
 
     attr_v6_2 = {
       action:   'permit',
       proto:    'udp',
-      src_addr: '1::8/56',
-      src_port: 'eq 41',
+      src_addr: '1::8',
+      src_addr_prefix: '56',
+      src_port_op: 'eq',
+      src_port_1: '41',
       dst_addr: 'any',
-      dst_port: '',
     }
 
     attr_v6_3 = {

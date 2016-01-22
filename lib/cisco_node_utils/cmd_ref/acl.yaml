@@ -11,7 +11,7 @@ _template:
 
 ace:
   config_get_token_append: '/^<seqno> .+$/'
-  config_set_append: '<state> <seqno> <action> <proto> <src_addr> <src_port> <dst_addr> <dst_port>'
+  config_set_append: '<state> <seqno> <action> <proto> <src_addr><src_addr_prefix> <src_addr_mask> <src_addr_group> <src_addr_group_port> <src_port_op> <src_port_1> <src_port_2> <dst_addr><dst_addr_prefix> <dst_addr_mask> <dst_addr_group> <dst_addr_group_port> <dst_port_op> <dst_port_1> <dst_port_2> <tcp_flag> <tcp_option_length> <http_method> <time_range> <precedence> <dscp> <ttl> <redirect> <log>'
 
 ace_destroy:
   config_set_append: 'no <seqno>'

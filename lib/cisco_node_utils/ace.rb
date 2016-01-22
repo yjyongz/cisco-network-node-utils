@@ -78,10 +78,31 @@ module Cisco
       # rubocop:disable Metrics/LineLength
       regexp = Regexp.new('(?<seqno>\d+) (?<action>\S+)'\
                  ' *(?<proto>\d+|\S+)'\
-                 ' *(?<src_addr>any|host \S+|\S+\/\d+|\S+ [:\.0-9a-fA-F]+|addrgroup \S+)*'\
-                 ' *(?<src_port>eq \S+|neq \S+|lt \S+|''gt \S+|range \S+ \S+|portgroup \S+)?'\
-                 ' *(?<dst_addr>any|host \S+|\S+\/\d+|\S+ [:\.0-9a-fA-F]+|addrgroup \S+)'\
-                 ' *(?<dst_port>eq \S+|neq \S+|lt \S+|gt \S+|range \S+ \S+|portgroup \S+)?')
+                 ' *(?<src_addr>any|host \S+|\S+\/\d+)?'\
+                 ' *(?<src_addr_prefix>/\d+)?'\
+                 ' *(?<src_addr_mask>\S+ [:\.0-9a-fA-F]+)?'\
+                 ' *(?<src_addr_group>addrgroup \S+)?'\
+                 ' *(?<src_addr_group_port>portgroup \S+)?'\
+                 ' *(?<src_port_op>eq|lt|gt|range|neq)?'\
+                 ' *(?<src_port_1>\d+)?'\
+                 ' *(?<src_port_2>\d+)?'\
+                 ' *(?<dst_addr>any|host \S+|\S+\/\d+)?'\
+                 ' *(?<dst_addr_prefix>/\d+)?'\
+                 ' *(?<dst_addr_mask>\S+ [:\.0-9a-fA-F]+)?'\
+                 ' *(?<dst_addr_group>addrgroup \S+)?'\
+                 ' *(?<dst_addr_group_port>portgroup \S+)?'\
+                 ' *(?<dst_port_op>eq|lt|gt|range|neq)?'\
+                 ' *(?<dst_port_1>\d+)?'\
+                 ' *(?<dst_port_2>\d+)?'\
+                 ' *(?<tcp_flag>ack|fin|psh|rst|syn)?'\
+                 ' *(?<tcp_option_length>\d+)?'\
+                 ' *(?<http_method>\d+|connect|delete|get|head|post|put|trace)?'\
+                 ' *(?<time_range>\S+)?'\
+                 ' *(?<precedence>\d+|)?'\
+                 ' *(?<dscp>\d+|)?'\
+                 ' *(?<ttl>\d+|)?'\
+                 ' *(?<redirect>\S+|)?'\
+                 ' *(?<log>\S+|)?')
       # rubocop:enable Metrics/LineLength
       regexp.match(str)
     end
@@ -104,9 +125,29 @@ module Cisco
         [:action,
          :proto,
          :src_addr,
-         :src_port,
-         :dst_addr,
-         :dst_port,
+         :src_addr_prefix,
+         :src_addr_mask,
+         :src_addr_group,
+         :src_addr_group_port,
+         :src_port_op,
+         :src_port_1,
+         :src_port_2,
+         :dst_addr_prefix,
+         :dst_addr_mask,
+         :dst_addr_group,
+         :dst_addr_group_port,
+         :dst_port_op,
+         :dst_port_1,
+         :dst_port_2,
+         :tcp_flag,
+         :tcp_option_length,
+         :http_method,
+         :time_range,
+         :precedence,
+         :dscp,
+         :ttl,
+         :redirect,
+         :log,
         ].each do |p|
           attrs[p] = '' if attrs[p].nil?
         end
@@ -163,16 +204,67 @@ module Cisco
       @set_args[:src_addr] = src_addr
     end
 
-    def src_port
+    def src_addr_prefix
       match = ace_get
       return nil if match.nil?
-      match.names.include?('src_port') ? match[:src_port] : nil
+      match.names.include?('src_addr_prefix') ? match[:src_addr_prefix] : nil
     end
 
-    def src_port=(src_port)
-      @set_args[:src_port] = src_port
+    def src_addr_prefix=(src_addr_prefix)
+      @set_args[:src_addr_prefix] = src_addr_prefix
     end
 
+    def src_addr_mask
+      match = ace_get
+      return nil if match.nil?
+      match.names.include?('src_addr_mask') ? match[:src_addr_mask] : nil
+    end
+
+    def src_addr_mask=(src_addr_mask)
+      @set_args[:src_addr_mask] = src_addr_mask
+    end
+
+    def src_addr_group
+      match = ace_get
+      return nil if match.nil?
+      match.names.include?('src_addr_group') ? match[:src_addr_group] : nil
+    end
+
+    def src_addr_group=(src_addr_group)
+      @set_args[:src_addr_group] = src_addr_group
+    end
+
+    def src_addr_group_port
+      match = ace_get
+      return nil if match.nil?
+      match.names.include?('src_addr_group_port') ? match[:src_addr_group_port] : nil
+    end
+
+    def src_addr_group_port=(src_addr_group_port)
+      @set_args[:src_addr_group_port] = src_addr_group_port
+    end
+
+    def src_port_op
+      match = ace_get
+      return nil if match.nil?
+      match.names.include?('src_port_op') ? match[:src_port_op] : nil
+    end
+
+    def src_port_op=(src_port_op)
+      @set_args[:src_port_op] = src_port_op
+    end
+
+    def src_port_1
+      match = ace_get
+      return nil if match.nil?
+      match.names.include?('src_port_1') ? match[:src_port_1] : nil
+    end
+
+    def src_port_1=(src_port_1)
+      @set_args[:src_port_1] = src_port_1
+    end
+
+    # dst addr
     def dst_addr
       match = ace_get
       return nil if match.nil?
@@ -183,14 +275,64 @@ module Cisco
       @set_args[:dst_addr] = dst_addr
     end
 
-    def dst_port
+    def dst_addr_prefix
       match = ace_get
       return nil if match.nil?
-      match.names.include?('dst_port') ? match[:dst_port] : nil
+      match.names.include?('dst_addr_prefix') ? match[:dst_addr_prefix] : nil
     end
 
-    def dst_port=(src_port)
-      @set_args[:dst_port] = src_port
+    def dst_addr_prefix=(dst_addr_prefix)
+      @set_args[:dst_addr_prefix] = dst_addr_prefix
+    end
+
+    def dst_addr_mask
+      match = ace_get
+      return nil if match.nil?
+      match.names.include?('dst_addr_mask') ? match[:dst_addr_mask] : nil
+    end
+
+    def dst_addr_mask=(dst_addr_mask)
+      @set_args[:dst_addr_mask] = dst_addr_mask
+    end
+
+    def dst_addr_group
+      match = ace_get
+      return nil if match.nil?
+      match.names.include?('dst_addr_group') ? match[:dst_addr_group] : nil
+    end
+
+    def dst_addr_group=(dst_addr_group)
+      @set_args[:dst_addr_group] = dst_addr_group
+    end
+
+    def dst_addr_group_port
+      match = ace_get
+      return nil if match.nil?
+      match.names.include?('dst_addr_group_port') ? match[:dst_addr_group_port] : nil
+    end
+
+    def dst_addr_group_port=(dst_addr_group_port)
+      @set_args[:dst_addr_group_port] = dst_addr_group_port
+    end
+
+    def dst_port_op
+      match = ace_get
+      return nil if match.nil?
+      match.names.include?('dst_port_op') ? match[:dst_port_op] : nil
+    end
+
+    def dst_port_op=(dst_port_op)
+      @set_args[:dst_port_op] = dst_port_op
+    end
+
+    def dst_port_1
+      match = ace_get
+      return nil if match.nil?
+      match.names.include?('dst_port_1') ? match[:dst_port_1] : nil
+    end
+
+    def dst_port_1=(dst_port_1)
+      @set_args[:dst_port_1] = dst_port_1
     end
   end
 end
